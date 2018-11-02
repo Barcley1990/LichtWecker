@@ -13,6 +13,8 @@
 #define MCP7940N_RTCYEAR_REG      0x06
 #define MCP7940N_CONTROL_REG      0x07
 #define MCP7940N_OSCTRIM_REG      0x08
+#define MCP7940N_ALM0SEC_REG      0x0A
+#define MCP7940N_ALM1SEC_REG      0x11
 
 #define OSC_DISABLE_MASK  0x0
 #define OSC_ENABLE_MASK   0x128
@@ -27,6 +29,7 @@
 #define DISPD5        5
 #define DISPD6        4
 #define DISPD7        3
+#define ALARMPIN      2
 
 /* LED Macros */
 #define NUMPIXELS     192
@@ -77,3 +80,11 @@
 #define UIMENUE_ID_ALARM        0x130
 #define UISUBMENUE_ID_SETALHOUR 0x131
 #define UISUBMENUE_ID_SETALMIN  0x132
+#define UISUBMENUE_ID_SETALSEC  0x133
+#define UISUBMENU_ID_SAFEALARM  0x134
+
+
+
+
+
+

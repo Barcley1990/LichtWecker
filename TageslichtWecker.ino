@@ -96,6 +96,7 @@ uint8_t timeOutCnt = 0;
 void switchAllLeds(LED_State state);
 void mcp7940nReadTimeAndDate(uint8_t *hour, uint8_t *minute, uint8_t *sec, wkdayType *wkday, uint8_t *day, uint8_t *month, uint16_t *year);
 void mcp7940nWriteTimeAndDate(uint8_t hour, uint8_t minute, uint8_t sec, wkdayType wkday, uint8_t day, uint8_t month, uint16_t year, hourFormatType hourFormat=Format24, timeFormatType timeFormat=AM);
+void mcp7940nSetAlarm0(uint8_t hour, uint8_t minute, uint8_t sec, wkdayType wkday, uint8_t day, uint8_t month, uint16_t year, hourFormatType hourFormat=Format24, timeFormatType timeFormat=AM);
 void mcp7940nDisableExtCrystal(void);
 void mcp7940nEnableExtCrystal(void);
 
@@ -135,6 +136,10 @@ void setup()
   TCCR1B = (1 << WGM12) | (1 << CS12) | (1 << CS10);
   TIMSK1 = (1 << OCIE1A);
   OCR1A  = 1600;
+
+  /* Attach alarm interrupt */
+  pinMode(ALARMPIN, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(ALARMPIN), AlarmInterrupt, CHANGE);
 
   sei();
 }
@@ -230,7 +235,7 @@ void updateDisplay()
     case UIMENUE_ID_HOME:   uiShowMenu("Licht", "Zeit", "Alarm", "<--"); break;
     case UIMENUE_ID_LIGHT:  uiShowMenu("Ein  ", "Aus ", "Mode1", "Mode2"); break;
     case UIMENUE_ID_TIME:   uiShowMenu("Set  ", "    ", "     ", "<--"); break;
-    case UIMENUE_ID_ALARM:  uiShowMenu("     ", "    ", "     ", "<--"); break;
+    case UIMENUE_ID_ALARM:  uiShowMenu("Set  ", "    ", "     ", "<--"); break;
     /* Time and Date menues */
     case UISUBMENUE_ID_SETHOUR:   uiShowMenu("Hour: ", itoa(clockHours, displayTextBuffer, 10), "", ""); break;
     case UISUBMENUE_ID_SETMIN:    uiShowMenu("Min:  ", itoa(clockMin, displayTextBuffer, 10), "", "");   break;
@@ -239,6 +244,11 @@ void updateDisplay()
     case UISUBMENUE_ID_SETMONTH:  uiShowMenu("Month:", itoa(dateMonth, displayTextBuffer, 10), "", "");  break;
     case UISUBMENUE_ID_SETDAY:    uiShowMenu("Day:  ", itoa(dateDay, displayTextBuffer, 10), "", "");    break;
     case UISUBMENUE_ID_SAFEDATE:  mcp7940nWriteTimeAndDate(clockHours,clockMin,clockSec,Montag,dateDay,dateMonth,dateYear); menuID = UIMENUE_ID_CLOCK; break;
+    /* Alarm menues */
+    case UISUBMENUE_ID_SETALHOUR: uiShowMenu("Hour: ", itoa(clockHours, displayTextBuffer, 10), "", ""); break;
+    case UISUBMENUE_ID_SETALMIN:  uiShowMenu("Min:  ", itoa(clockMin, displayTextBuffer, 10), "", "");   break;
+    case UISUBMENUE_ID_SETALSEC:  uiShowMenu("Sec:  ", itoa(clockSec, displayTextBuffer, 10), "", "");   break;
+    case UISUBMENU_ID_SAFEALARM: mcp7940nSetAlarm0(clockHours,clockMin,clockSec,Montag,dateDay,dateMonth); menuID = UIMENUE_ID_CLOCK; break;
     /* Light menues */
     case UISUBMENUE_ID_LIGHTON:  switchAllLeds(ON); menuID = UIMENUE_ID_CLOCK; break;
     case UISUBMENUE_ID_LIGHTOFF: switchAllLeds(OFF); LedMode1Flag = FALSE; LedMode2Flag = FALSE; menuID = UIMENUE_ID_CLOCK; break;
@@ -582,3 +592,17 @@ ISR(TIMER1_COMPA_vect)
 {
   flagTaskCyclic100ms = TRUE;
 }
+
+void AlarmInterrupt()
+{
+  static uint8_t pinState = 0;
+  pinState ^= 0x1;
+
+  switch(pinState)
+  {
+    case 0: switchAllLeds(OFF);break;
+    case 1: switchAllLeds(ON);break;
+    default: switchAllLeds(OFF);break;
+  }
+}
+
