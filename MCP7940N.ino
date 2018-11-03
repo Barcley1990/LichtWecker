@@ -8,8 +8,8 @@ void mcp7940nSetAlarm0(uint8_t hour,
                       timeFormatType timeFormat)
 {
   uint8_t LPYR = FALSE;
-  if((year % 4) == 0)
-    LPYR = TRUE;
+  //if((year % 4) == 0)
+ //   LPYR = TRUE;
 
   sec     = (((sec/10)&0x7)<<4) | (((sec%10)&0xF)<<0); 
   minute  = (((minute/10)&0x7)<<4) | (((minute%10)&0xF)<<0);
@@ -34,7 +34,7 @@ void mcp7940nSetAlarm0(uint8_t hour,
   Wire.write(0);
   Wire.write(0);
   Wire.write(0);
-  Wire.Write(0b00010000);
+  Wire.write(0b00010000);
   Wire.endTransmission();
 }
 

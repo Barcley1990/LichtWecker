@@ -96,7 +96,7 @@ uint8_t timeOutCnt = 0;
 void switchAllLeds(LED_State state);
 void mcp7940nReadTimeAndDate(uint8_t *hour, uint8_t *minute, uint8_t *sec, wkdayType *wkday, uint8_t *day, uint8_t *month, uint16_t *year);
 void mcp7940nWriteTimeAndDate(uint8_t hour, uint8_t minute, uint8_t sec, wkdayType wkday, uint8_t day, uint8_t month, uint16_t year, hourFormatType hourFormat=Format24, timeFormatType timeFormat=AM);
-void mcp7940nSetAlarm0(uint8_t hour, uint8_t minute, uint8_t sec, wkdayType wkday, uint8_t day, uint8_t month, uint16_t year, hourFormatType hourFormat=Format24, timeFormatType timeFormat=AM);
+void mcp7940nSetAlarm0(uint8_t hour, uint8_t minute, uint8_t sec, wkdayType wkday, uint8_t day, uint8_t month, hourFormatType hourFormat=Format24, timeFormatType timeFormat=AM);
 void mcp7940nDisableExtCrystal(void);
 void mcp7940nEnableExtCrystal(void);
 
@@ -268,15 +268,15 @@ void handleButtons()
   if (isButtonToggled(NEXTBUTTON) == TRUE)
   {
     /* Only for setting the time */
-    if (menuID == UISUBMENUE_ID_SETHOUR)
+    if (menuID == UISUBMENUE_ID_SETHOUR || menuID == UISUBMENUE_ID_SETALHOUR)
     {
       incHour();
     }
-    else if (menuID == UISUBMENUE_ID_SETMIN)
+    else if (menuID == UISUBMENUE_ID_SETMIN || menuID == UISUBMENUE_ID_SETALMIN)
     {
       incMin();
     }
-    else if (menuID == UISUBMENUE_ID_SETSEC)
+    else if (menuID == UISUBMENUE_ID_SETSEC || menuID == UISUBMENUE_ID_SETALSEC)
     {
       incSec();
     }
@@ -607,4 +607,3 @@ void AlarmInterrupt()
     default: switchAllLeds(OFF);break;
   }
 }
-
