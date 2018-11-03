@@ -109,7 +109,7 @@ void mcp7940nWriteTimeAndDate(uint8_t hour,
   month   = ((LPYR&0x1)<<5) | (((month/10)&0x1)<<4) | (((month%10)&0xF)<<0);
   year    = (((year/10)&0x7)<<4) | (((year%10)&0xF)<<0);
   
-  //mcp7940nDiableExtCrystal();
+  mcp7940nDiableExtCrystal();
   Wire.beginTransmission(MCP7940N_ADDRES);
   Wire.write(MCP7940N_RTCSEC_REG);
   Wire.write(sec);
@@ -120,12 +120,12 @@ void mcp7940nWriteTimeAndDate(uint8_t hour,
   Wire.write(month);
   Wire.write(year);
   Wire.endTransmission();
-  //mcp7940nEnableExtCrystal();
+  mcp7940nEnableExtCrystal();
 }
 
 void mcp7940nDiableExtCrystal()
 {
-  uint8_t oscRunFlag = TRUE;
+  uint8_t oscIsRuningFlag = TRUE;
   
   /* Set ST Bit to zero */
   Wire.beginTransmission(MCP7940N_ADDRES);
@@ -134,21 +134,30 @@ void mcp7940nDiableExtCrystal()
   Wire.endTransmission();
 
   /* Await OSCRUN flag to be cleared */
-  while(oscRunFlag)
+  while(oscIsRuningFlag == TRUE)
   {
+     // Serial.print("Trap2!");
     Wire.beginTransmission(MCP7940N_ADDRES);
-    Wire.write(MCP7940N_RTCWKDAY_REG);
-    Wire.endTransmission(); 
-      
-    Wire.requestFrom(MCP7940N_ADDRES,1);
-    while(Wire.available() < 1)
-    oscRunFlag = ((uint8_t)Wire.read()>>5)&0x1;
+    Wire.write(MCP7940N_RTCSEC_REG);
+    Wire.endTransmission();
+    
+    Wire.requestFrom(MCP7940N_ADDRES,7);
+    while(Wire.available() < 7);
+  
+    Serial.println((uint8_t)Wire.read(),BIN);
+    Serial.println((uint8_t)Wire.read(),BIN);
+    Serial.println((uint8_t)Wire.read(),BIN);
+    oscIsRuningFlag = ((uint8_t)Wire.read()>>5)&0x1;
+    Serial.println((uint8_t)Wire.read(),BIN);
+    Serial.println((uint8_t)Wire.read(),BIN);
+    Serial.println((uint8_t)Wire.read(),BIN);
+    Serial.println("");
   }
 }
 
 void mcp7940nEnableExtCrystal()
 {
-  uint8_t oscRunFlag = FALSE;
+  uint8_t oscIsRuningFlag = FALSE;
   
   /* Set ST Bit to zero */
   Wire.beginTransmission(MCP7940N_ADDRES);
@@ -157,14 +166,23 @@ void mcp7940nEnableExtCrystal()
   Wire.endTransmission();
 
   /* Await OSCRUN flag to be cleared */
-  while(!oscRunFlag)
+  while(oscIsRuningFlag == FALSE)
   {
+     // Serial.print("Trap2!");
     Wire.beginTransmission(MCP7940N_ADDRES);
-    Wire.write(MCP7940N_RTCWKDAY_REG);
-    Wire.endTransmission(); 
-      
-    Wire.requestFrom(MCP7940N_ADDRES,1);
-    while(Wire.available() < 1)
-    oscRunFlag = ((uint8_t)Wire.read()>>5)&0x1;
+    Wire.write(MCP7940N_RTCSEC_REG);
+    Wire.endTransmission();
+    
+    Wire.requestFrom(MCP7940N_ADDRES,7);
+    while(Wire.available() < 7);
+  
+    Serial.println((uint8_t)Wire.read(),BIN);
+    Serial.println((uint8_t)Wire.read(),BIN);
+    Serial.println((uint8_t)Wire.read(),BIN);
+    oscIsRuningFlag = ((uint8_t)Wire.read()>>5)&0x1;
+    Serial.println((uint8_t)Wire.read(),BIN);
+    Serial.println((uint8_t)Wire.read(),BIN);
+    Serial.println((uint8_t)Wire.read(),BIN);
+    Serial.println("");
   }
 }

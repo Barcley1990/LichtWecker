@@ -114,9 +114,10 @@ void setup()
 
   Serial.begin(9600);
   Wire.begin(MCP7940N_ADDRES);
+  mcp7940nEnableExtCrystal();
 
   /* TODO: For Testing... */
-  mcp7940nWriteTimeAndDate(23,52,59,Dienstag,22,9,2018);
+  //mcp7940nWriteTimeAndDate(23,52,59,Dienstag,22,9,2018);
 
   /* Setup I/Os */
   pinMode(BUTTON_0, INPUT);
@@ -403,6 +404,7 @@ void uiClock()
   {
     tmp ^= 0x1;
     loopCnt = 0;
+    Serial.print(timeData.hour);Serial.print(":");Serial.print(timeData.minute);Serial.print(":");Serial.print(timeData.second);Serial.println();
   }
   /* Print Time */
   lcd.setCursor(4, 0);

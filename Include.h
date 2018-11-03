@@ -16,8 +16,8 @@
 #define MCP7940N_ALM0SEC_REG      0x0A
 #define MCP7940N_ALM1SEC_REG      0x11
 
-#define OSC_DISABLE_MASK  0x0
-#define OSC_ENABLE_MASK   0x128
+#define OSC_DISABLE_MASK  0
+#define OSC_ENABLE_MASK   128
 
 /* Arduino Pins */
 #define BUTTON_0      7
